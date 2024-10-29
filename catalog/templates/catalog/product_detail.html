@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'catalog/base.html' %}
 {% block content %}
 <head>
     <meta charset="UTF-8">
@@ -12,18 +12,18 @@
         <div class="row mt-4">
                 <div class="col-md-4">
                     <div class="product-card border p-3 mb-4">
-                        <h2>{{ product.name }}</h2>
-                        {% if product.image %}
+                        <h2>{{ object.name }}</h2>
+                        {% if object.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" />
                         {% endif %}
                         <p>{{ product.description|truncatechars:100 }}</p>
-                        <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+                        <p><strong>Цена:</strong> {{ object.price }} руб.</p>
                         <div class="product-details mt-3">
-                            <p><strong>Описание:</strong> {{ product.description }}</p>
-                            <p><strong>Категория:</strong> {{ product.category.name }}</p>
-                            <p><strong>Дата создания:</strong> {{ product.created_at }}</p>
-                            <p><strong>Дата последнего изменения:</strong> {{ product.updated_at }}</p>
-                            <a class="btn btn-primary" href="{% url 'catalog:home' %}" role="button">Назад</a>
+                            <p><strong>Описание:</strong> {{ object.description }}</p>
+                            <p><strong>Категория:</strong> {{ object.category.name }}</p>
+                            <p><strong>Дата создания:</strong> {{ object.created_at }}</p>
+                            <p><strong>Дата последнего изменения:</strong> {{ object.updated_at }}</p>
+                            <a class="btn btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
                         </div>
                     </div>
                 </div>
