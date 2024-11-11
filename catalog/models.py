@@ -10,6 +10,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    objects = None
     name = models.CharField(max_length=250, verbose_name='Наименование')
     description = models.TextField()  # Описание
     image = models.ImageField(upload_to='images/', blank=True, null=True)  # Изображение
@@ -25,3 +26,4 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
