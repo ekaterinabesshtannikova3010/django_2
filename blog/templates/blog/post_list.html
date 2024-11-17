@@ -17,6 +17,7 @@
                 <a href="{% url 'blog:post_delete' post.pk %}">Удалить</a>
             </li>
         <a href="{% url 'blog:post_create' %}">Создать новый пост</a>
+        <a href="{% url 'catalog:product_list' %}">На главную</a>
         {% endfor %}
     </ul>
 </body>
