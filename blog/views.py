@@ -5,7 +5,7 @@ from .models import Post
 from .forms import PostForm
 from django.urls import reverse
 
-@login_required
+
 class PostListView(generic.ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -14,7 +14,7 @@ class PostListView(generic.ListView):
     def get_queryset(self):
         return Post.objects.filter(published=True)
 
-@login_required
+
 class PostDetailView(generic.DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
@@ -25,14 +25,14 @@ class PostDetailView(generic.DetailView):
         obj.save()
         return obj
 
-@login_required
+
 class PostCreateView(generic.CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
     success_url = reverse_lazy('blog:post_list')
 
-@login_required
+
 class PostUpdateView(generic.UpdateView):
     model = Post
     form_class = PostForm
@@ -42,7 +42,7 @@ class PostUpdateView(generic.UpdateView):
     def get_success_url(self):
         return reverse('blog:post_detail', kwargs={'pk': self.object.pk})
 
-@login_required
+
 class PostDeleteView(generic.DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
