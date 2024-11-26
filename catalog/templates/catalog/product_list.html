@@ -1,0 +1,27 @@
+{% extends 'catalog/base.html' %}
+{% load my_tags %}
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <a href="{% url 'catalog:product_create' %}">Добавить новый продукт</a>
+            <ul>
+                {% for product in products %}
+                <li>
+                    {{ product.name }} - {{ product.price }}
+                    {% if user == product.owner %}
+                    <a href="{% url 'catalog:product_update' product.pk %}">Редактировать</a>
+                    <form action="{% url 'catalog:product_delete' product.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Удалить</button>
+                    </form>
+                    {% endif %}
+
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
