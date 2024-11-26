@@ -1,12 +1,15 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import ProductForm
 from django.views import View
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Product
+from django.core.cache import cache
+
 
 class ContactView(TemplateView):
     template_name = 'contact.html'
@@ -25,6 +28,13 @@ class ProductListView(ListView):
     model = Product
     template_name = 'catalog/product_list.html'
     context_object_name = 'products'
+
+    def get_queryset(self):
+        queryset = cache.get('product_list')
+        if not queryset:
+            queryset = super().get_queryset()
+            cache.set('product_list', queryset, 60 * 15)  # Кешируем данные на 15 минут
+        return queryset
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -48,7 +58,6 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return get_object_or_404(Product, pk=self.kwargs['pk'])
 
 
-
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
@@ -56,17 +65,13 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('catalog:product_list')
     permission_required = 'catalog.delete_product'
 
-    # def post(self, request, pk):
-    #     product = get_object_or_404(Product, pk=pk)
-    #     product.delete()
-    #     return redirect('catalog:product_list')
-
     def get_object(self, queryset=None):
         return get_object_or_404(Product, pk=self.kwargs['pk'])
 
     def test_func(self):
         product = self.get_object()
         return self.request.user == product.owner or self.request.user.is_staff
+
 
 class ProductEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
@@ -92,7 +97,8 @@ class UnpublishProductView(PermissionRequiredMixin, View):
         product.save()
         return redirect('catalog:product_list')
 
-@login_required
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'catalog/product_detail.html', {'product': product})
+
+@method_decorator(cache_page(60 * 15), name='dispatch')  # Кешируем на 15 минут
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
